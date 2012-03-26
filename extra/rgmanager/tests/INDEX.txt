@@ -1,0 +1,6 @@
+test1.conf: 2 nodes, 1 ordered restr. failover d. (1 node prior.), 2 services using globals resources
+test2.conf: + second priority in failover d. (1,- ==> 1,10)
+test3.conf: - failover ordering for that domain
+test4.conf: + service now assigned to domain
+test5.conf: + vm
+test6.conf: + fencing (fence_xvm)
