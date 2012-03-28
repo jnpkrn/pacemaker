@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004-2006
+  Copyright Red Hat, Inc. 2004-2012
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -127,7 +127,7 @@ flatten(int argc, char **argv)
         shift();
         if (!strcmp(argv[0], "-r")) {
             if (!new_rb)
-                new_rb = xmlNewNode(NULL, (xmlChar *) "rm");
+                new_rb = xmlNewNode(NULL, (xmlChar *) "resources");
         } else {
             if (f == stdout)
                 f = fopen(argv[0], "w+");
@@ -201,7 +201,8 @@ flatten(int argc, char **argv)
 static void
 usage(const char *arg0, int ret)
 {
-    fprintf(stderr, "usage: %s <input.conf> [output.conf] [-r]\n", arg0);
+    fprintf(stderr, "usage: %s <input.conf> [output.conf] [-r]\n\n", arg0);
+    fprintf(stderr, "-r\t\tseparate child resources (as when reusing them)\n");
     exit(ret);
 }
 
