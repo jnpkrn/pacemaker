@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<cluster name="foo" config_version="1">
+  <clusternodes>
+    <clusternode name="node1" nodeid="1"/>
+    <clusternode name="node2" nodeid="2"/>
+  </clusternodes>
+  <rm>
+    <failoverdomains>
+      <failoverdomain name="one" ordered="1" restricted="1">
+        <failoverdomainnode name="node1" priority="1"/>
+        <failoverdomainnode name="node2"/>
+      </failoverdomain>
+    </failoverdomains>
+    <service rgmanager-meta-agent="service.sh" name="nfs1" nfslock="1">
+      <fs rgmanager-meta-agent="fs.sh" name="fs1" mountpoint="/mnt/1" device="/dev/sda1" nfslock="1"/>
+      <nfsexport rgmanager-meta-agent="nfsexport.sh" name="nfsexports_0" device="/dev/sda1" path="/mnt/1"/>
+      <nfsclient rgmanager-meta-agent="nfsclient.sh" name="bill_0" target="bill.lab" path="/mnt/1" svcname="nfs1" options="rw" service_name="nfs1" use_cache="0"/>
+      <ip rgmanager-meta-agent="ip.sh" address="192.168.122.1" nfslock="1"/>
+      <script rgmanager-meta-agent="script.sh" name="LAST" file="/bin/true" service_name="nfs1"/>
+    </service>
+    <service rgmanager-meta-agent="service.sh" name="nfs2">
+      <fs rgmanager-meta-agent="fs.sh" name="fs2" mountpoint="/mnt/2" device="/dev/sda2" nfslock="0"/>
+      <nfsexport rgmanager-meta-agent="nfsexport.sh" name="nfsexports_1" device="/dev/sda2" path="/mnt/2"/>
+      <nfsclient rgmanager-meta-agent="nfsclient.sh" name="bill_1" target="bill.lab" path="/mnt/2" svcname="nfs2" options="rw" service_name="nfs2" use_cache="0"/>
+      <ip rgmanager-meta-agent="ip.sh" address="192.168.122.2" nfslock="0"/>
+    </service>
+  </rm>
+</cluster>
