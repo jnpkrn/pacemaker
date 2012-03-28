@@ -117,7 +117,7 @@ conf_close(void)
 }
 
 void
-conf_setconfig(char *path)
+conf_setconfig(const char *path)
 {
     conffile = path;
 }

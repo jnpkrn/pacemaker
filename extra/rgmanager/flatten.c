@@ -120,10 +120,8 @@ flatten(int argc, char **argv, xmlDocPtr * doc)
     int ret = 0;
 
     conf_setconfig(argv[0]);
-    if (conf_open() < 0) {
-        xmlFree(new_rb);
-        goto out;
-    }
+    if (conf_open() < 0)
+        return -1;
 
     while (argc >= 2) {
         shift();
