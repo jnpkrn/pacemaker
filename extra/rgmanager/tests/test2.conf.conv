@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cib xmlns:cluster="http://dev/null" validate-with="pacemaker-1.1" admin_epoch="1" epoch="1" num_updates="0" have-quorum="1">
+   <configuration>
+      <crm_config>
+         <cluster_property_set id="cib-bootstrap-options">
+            <nvpair id="startup-fencing" name="startup-fencing" value="true"/>
+            <nvpair id="stonith-enabled" name="stonith-enabled" value="true"/>
+            <nvpair id="default-resource-stickiness" name="default-resource-stickiness" value="INFINITY"/>
+         </cluster_property_set>
+      </crm_config>
+      <nodes>
+         <node id="node1" uname="node1" type="normal"/>
+         <node id="node2" uname="node2" type="normal"/>
+      </nodes>
+      <domains>
+         <domain id="one">
+            <node name="node1" score="INFINITY"/>
+            <node name="node2" score="910000"/>
+         </domain>
+      </domains>
+      <resources>
+         <group id="service_nfs1">
+            <primitive class="ocf" id="fs_fs1" provider="redhat" type="fs.sh">
+               <instance_attributes id="fs_fs1_inst_attrs">
+                  <nvpair id="fs_fs1_rgmanager-meta-agent" name="rgmanager-meta-agent" value="fs.sh"/>
+                  <nvpair id="fs_fs1_name" name="name" value="fs1"/>
+                  <nvpair id="fs_fs1_mountpoint" name="mountpoint" value="/mnt/1"/>
+                  <nvpair id="fs_fs1_device" name="device" value="/dev/sda1"/>
+                  <nvpair id="fs_fs1_nfslock" name="nfslock" value="1"/>
+               </instance_attributes>
+            </primitive>
+            <primitive class="ocf" id="nfsexport_nfsexports_0" provider="redhat" type="nfsexport.sh">
+               <instance_attributes id="nfsexport_nfsexports_0_inst_attrs">
+                  <nvpair id="nfsexport_nfsexports_0_rgmanager-meta-agent" name="rgmanager-meta-agent" value="nfsexport.sh"/>
+                  <nvpair id="nfsexport_nfsexports_0_name" name="name" value="nfsexports_0"/>
+                  <nvpair id="nfsexport_nfsexports_0_device" name="device" value="/dev/sda1"/>
+                  <nvpair id="nfsexport_nfsexports_0_path" name="path" value="/mnt/1"/>
+               </instance_attributes>
+            </primitive>
+            <primitive class="ocf" id="nfsclient_bill_0" provider="redhat" type="nfsclient.sh">
+               <instance_attributes id="nfsclient_bill_0_inst_attrs">
+                  <nvpair id="nfsclient_bill_0_rgmanager-meta-agent" name="rgmanager-meta-agent" value="nfsclient.sh"/>
+                  <nvpair id="nfsclient_bill_0_name" name="name" value="bill_0"/>
+                  <nvpair id="nfsclient_bill_0_target" name="target" value="bill.lab"/>
+                  <nvpair id="nfsclient_bill_0_path" name="path" value="/mnt/1"/>
+                  <nvpair id="nfsclient_bill_0_svcname" name="svcname" value="nfs1"/>
+                  <nvpair id="nfsclient_bill_0_options" name="options" value="rw"/>
+                  <nvpair id="nfsclient_bill_0_service_name" name="service_name" value="nfs1"/>
+                  <nvpair id="nfsclient_bill_0_use_cache" name="use_cache" value="0"/>
+               </instance_attributes>
+            </primitive>
+            <primitive class="ocf" id="ip_192_168_122_1" provider="redhat" type="ip.sh">
+               <instance_attributes id="ip_192_168_122_1_inst_attrs">
+                  <nvpair id="ip_192_168_122_1_rgmanager-meta-agent" name="rgmanager-meta-agent" value="ip.sh"/>
+                  <nvpair id="ip_192_168_122_1_address" name="address" value="192.168.122.1"/>
+                  <nvpair id="ip_192_168_122_1_nfslock" name="nfslock" value="1"/>
+               </instance_attributes>
+            </primitive>
+            <primitive class="ocf" id="script_LAST" provider="redhat" type="script.sh">
+               <instance_attributes id="script_LAST_inst_attrs">
+                  <nvpair id="script_LAST_rgmanager-meta-agent" name="rgmanager-meta-agent" value="script.sh"/>
+                  <nvpair id="script_LAST_name" name="name" value="LAST"/>
+                  <nvpair id="script_LAST_file" name="file" value="/bin/true"/>
+                  <nvpair id="script_LAST_service_name" name="service_name" value="nfs1"/>
+               </instance_attributes>
+            </primitive>
+         </group>
+         <group id="service_nfs2">
+            <primitive class="ocf" id="fs_fs2" provider="redhat" type="fs.sh">
+               <instance_attributes id="fs_fs2_inst_attrs">
+                  <nvpair id="fs_fs2_rgmanager-meta-agent" name="rgmanager-meta-agent" value="fs.sh"/>
+                  <nvpair id="fs_fs2_name" name="name" value="fs2"/>
+                  <nvpair id="fs_fs2_mountpoint" name="mountpoint" value="/mnt/2"/>
+                  <nvpair id="fs_fs2_device" name="device" value="/dev/sda2"/>
+                  <nvpair id="fs_fs2_nfslock" name="nfslock" value="0"/>
+               </instance_attributes>
+            </primitive>
+            <primitive class="ocf" id="nfsexport_nfsexports_1" provider="redhat" type="nfsexport.sh">
+               <instance_attributes id="nfsexport_nfsexports_1_inst_attrs">
+                  <nvpair id="nfsexport_nfsexports_1_rgmanager-meta-agent" name="rgmanager-meta-agent" value="nfsexport.sh"/>
+                  <nvpair id="nfsexport_nfsexports_1_name" name="name" value="nfsexports_1"/>
+                  <nvpair id="nfsexport_nfsexports_1_device" name="device" value="/dev/sda2"/>
+                  <nvpair id="nfsexport_nfsexports_1_path" name="path" value="/mnt/2"/>
+               </instance_attributes>
+            </primitive>
+            <primitive class="ocf" id="nfsclient_bill_1" provider="redhat" type="nfsclient.sh">
+               <instance_attributes id="nfsclient_bill_1_inst_attrs">
+                  <nvpair id="nfsclient_bill_1_rgmanager-meta-agent" name="rgmanager-meta-agent" value="nfsclient.sh"/>
+                  <nvpair id="nfsclient_bill_1_name" name="name" value="bill_1"/>
+                  <nvpair id="nfsclient_bill_1_target" name="target" value="bill.lab"/>
+                  <nvpair id="nfsclient_bill_1_path" name="path" value="/mnt/2"/>
+                  <nvpair id="nfsclient_bill_1_svcname" name="svcname" value="nfs2"/>
+                  <nvpair id="nfsclient_bill_1_options" name="options" value="rw"/>
+                  <nvpair id="nfsclient_bill_1_service_name" name="service_name" value="nfs2"/>
+                  <nvpair id="nfsclient_bill_1_use_cache" name="use_cache" value="0"/>
+               </instance_attributes>
+            </primitive>
+            <primitive class="ocf" id="ip_192_168_122_2" provider="redhat" type="ip.sh">
+               <instance_attributes id="ip_192_168_122_2_inst_attrs">
+                  <nvpair id="ip_192_168_122_2_rgmanager-meta-agent" name="rgmanager-meta-agent" value="ip.sh"/>
+                  <nvpair id="ip_192_168_122_2_address" name="address" value="192.168.122.2"/>
+                  <nvpair id="ip_192_168_122_2_nfslock" name="nfslock" value="0"/>
+               </instance_attributes>
+            </primitive>
+         </group>
+      </resources>
+      <constraints/>
+   </configuration>
+   <status/>
+</cib>

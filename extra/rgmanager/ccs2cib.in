@@ -16,10 +16,14 @@ _validate()
 		export PATH="$PATH:."
 	fi
 
-	which ccs_flatten &> /dev/null	|| die "Can't find ccs_flatten in path!"
+	if ! which ccs_flatten &> /dev/null; then
+		[ $DEBUG -eq 1 ] || die "Can't find ccs_flatten in path!"
+		echo "debug: compiling local version of ccs_flatten"
+		./makelocal.sh # compile it on demand
+	fi
 	which java &> /dev/null		|| die "Can not find java in path!"
 
-	if [ -z "$XSL_FILE" ]; then
+	if [ ! -f "$XSL_FILE" ]; then
 		if [ $DEBUG -eq 1 ]; then
 			XSL_FILE=./cluconf2cib.xsl
 			echo "debug: using $XSL_FILE"
@@ -28,17 +32,21 @@ _validate()
 		fi
 	fi
 
-	if [ -z "$SAXON_JAR" ]; then
+	if [ ! -f "$SAXON_JAR" ]; then
 		if [ $DEBUG -eq 1 ]; then
-			SAXON_JAR=/usr/share/java/saxon.jar
+			SAXON_JAR="/usr/share/saxon/lib/saxon8.jar"
 			echo "debug: using $SAXON_JAR"
 		else
 			die "Please specify path to saxon.jar using -J <path>."
 		fi
 	fi
 
-	[ -d /usr/share/cluster ] || die "/usr/share/cluster does not exist."
-	[ -f /usr/share/cluster/service.sh ] || die "Missing rgmanager resource agents?"
+	if [ ! -d /usr/share/cluster ]; then
+		[ $DEBUG -eq 1 ] || die "/usr/share/cluster does not exist."
+		echo "debug: expecting custom path to RA hardcoded in ccs_flatten"
+	elif [ ! -f /usr/share/cluster/service.sh ]; then
+		[ $DEBUG -eq 1 ] || die "Missing rgmanager resource agents?"
+	fi
 
 	[ -f "$XSL_FILE" ] || die "$XSL_FILE does not exist!"
 	[ -f "$SAXON_JAR" ] || die "$SAXON_JAR does not exist!"
@@ -137,7 +145,8 @@ if ! ccs_flatten "$conf_in" > $tmp; then
 	die "Flattening of configuration file failed."
 fi
 
-if ! java -jar $SAXON_JAR -xsl:$XSL_FILE $tmp > $cib_out; then
+#if ! java -jar $SAXON_JAR -xsl:$XSL_FILE $tmp > $cib_out; then
+if ! java -jar $SAXON_JAR $tmp $XSL_FILE > $cib_out; then
 	rm -f $tmp
 	die "Conversion failed."
 fi
