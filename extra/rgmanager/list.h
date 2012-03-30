@@ -1,3 +1,6 @@
+/*
+  Code originates from rgmanager project (list.h).
+*/
 #ifndef _LIST_H
 #  define _LIST_H
 

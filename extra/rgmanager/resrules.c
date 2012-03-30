@@ -15,6 +15,8 @@
   along with this program; see the file COPYING.  If not, write to the
   Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
   MA 02110-1301 USA
+
+  Code originates from rgmanager project (resrules).
 */
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
@@ -22,16 +24,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <resgroup.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <list.h>
 #include <ctype.h>
-#include <reslist.h>
 #include <dirent.h>
-#include <libgen.h>
 #include <sys/wait.h>
-#include <xmlconf.h>
+#include <errno.h>
+#include <libgen.h>
+#include <unistd.h>  /* read, pipe, fork, close, ... */
+
+#include "reslist.h"
+#include "xmlconf.h"
 
 /**
    Store a new resource rule in the given rule list.

@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004-2006
+  Copyright Red Hat, Inc. 2004-2012
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -18,6 +18,8 @@
 
   Fix for #193859 - relocation of a service w/o umounting file-systems
     by Navid Sheikhol-Eslami [ navid at redhat dot com ]
+
+  Code originates from rgmanager project (restree).
 */
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
@@ -26,13 +28,16 @@
 #include <stdio.h>
 #include <list.h>
 #include <sys/wait.h>
-#include <resgroup.h>
 #include <libgen.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <reslist.h>
-#include <assert.h>
-#include <xmlconf.h>
+#include <string.h>  /* strcmp, strcasecmp, memset, strchr */
+
+#include "reslist.h"
+#include "xmlconf.h"
+
+/* XXX from resgroup.h */
+#define SFL_FAILURE  1
 
 /* XXX from resrules.c */
 int store_childtype(resource_child_t ** childp, char *name, int start,
