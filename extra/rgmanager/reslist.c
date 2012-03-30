@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004
+  Copyright Red Hat, Inc. 2004-2012
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -15,19 +15,22 @@
   along with this program; see the file COPYING.  If not, write to the
   Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
   MA 02110-1301 USA
+
+  Code originates from rgmanager project (reslist).
 */
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <resgroup.h>
+#include <string.h>   /* strcmp */
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <list.h>
 #include <libgen.h>
-#include <reslist.h>
-#include <xmlconf.h>
+
+#include "list.h"
+#include "reslist.h"
+#include "xmlconf.h"
 
 void
 res_build_name(char *buf, size_t buflen, resource_t * res)

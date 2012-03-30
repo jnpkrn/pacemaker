@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004-2012
+  Copyright Red Hat, Inc. 2011-2012
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -21,13 +21,14 @@
 #include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <resgroup.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <list.h>
-#include <reslist.h>
-#include <xmlconf.h>
+#include <string.h>  /* strcmp, strcasecmp */
 #include <libgen.h>
+
+#include "list.h"
+#include "reslist.h"
+#include "xmlconf.h"
 
 #define shift() {++argv; --argc;}
 
