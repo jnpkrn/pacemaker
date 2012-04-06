@@ -23,7 +23,7 @@
 #include <string.h>    /* strcmp */
 #include <ctype.h>     /* isdigit */
 #include <dirent.h>    /* readdir */
-#include <libgen.h>    /* basename */
+#include <libgen.h>    /* POSIX basename */
 #include <unistd.h>    /* read, pipe, fork, close, ... */
 #include <sys/wait.h>  /* waitpid */
 #include <sys/stat.h>  /* stat */

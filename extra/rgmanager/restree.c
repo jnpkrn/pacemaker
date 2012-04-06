@@ -21,30 +21,27 @@
 
   Code originates from rgmanager project (restree).
 */
-#include <libxml/parser.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <list.h>
 #include <sys/wait.h>
 #include <libgen.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>  /* strcmp, strcasecmp, memset, strchr */
 
+#include <libxml/tree.h>       /* xmlNode, ... */
+#include <libxml/xmlstring.h>  /* xmlChar */
+
+#include "list.h"
 #include "reslist.h"
 #include "xmlconf.h"
 
 /* XXX from resgroup.h */
 #define SFL_FAILURE  1
 
-/* XXX from resrules.c */
-int store_childtype(resource_child_t ** childp, char *name, int start,
-                    int stop, int forbid, int flags);
+/* XXX from resrules.c, forward declarations */
 int _res_op(xmlNode ** xpp, xmlNode * rmp, resource_node_t ** tree, resource_t * first, char *type);
 static inline int
-
 _res_op_internal(xmlNode ** xpp, xmlNode * rmp, resource_node_t ** tree, resource_t * first,
                  char *type, resource_node_t * node);
 
