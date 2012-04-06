@@ -34,10 +34,10 @@ static const char *conffile = "/etc/cluster/cluster.conf";
    Execute an XPath query, returning the first match.  Multiple matches are
    ignored.  Please be advised that this is quite inefficient.
 
-   @param doc		Loaded XML document to search
-   @param ctx		Predefined XML XPath context
-   @param query		Query to execute.
-   @return		newly allocated pointer to value or NULL if not found.
+   @param doc           Loaded XML document to search
+   @param ctx           Predefined XML XPath context
+   @param query         Query to execute.
+   @return              newly allocated pointer to value or NULL if not found.
  */
 char *
 xpath_get_one(xmlDocPtr __attribute__ ((unused)) doc, xmlXPathContextPtr ctx, char *query)

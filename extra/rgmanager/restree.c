@@ -48,9 +48,6 @@ static inline int
 _res_op_internal(xmlNode ** xpp, xmlNode * rmp, resource_node_t ** tree, resource_t * first,
                  char *type, resource_node_t * node);
 
-/* XXX from reslist.c */
-void *act_dup(resource_act_t * acts);
-
 /**
    Fold a resource into an XML node.
 

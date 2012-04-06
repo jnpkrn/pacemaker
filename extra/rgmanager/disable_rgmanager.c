@@ -16,15 +16,18 @@
   Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
   MA 02110-1301 USA
 */
-#include <libxml/parser.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <libgen.h>
+#include <string.h>   /* strcmp */
+#include <strings.h>  /* strcasecmp */
+#include <libgen.h>   /* POSIX basename */
 
-#define shift() {++argv; --argc;}
+#include <libxml/parser.h>
+#include <libxml/tree.h>       /* xmlNodePtr, xmlChildrenNode, ... */
+#include <libxml/xmlstring.h>  /* xmlChar */
+
+#define shift()          {++argv; --argc;}
+#define NORETWRN(fcall)  (void) fcall
 
 static int
 disable_rgmanager(xmlDocPtr doc)
@@ -50,13 +53,16 @@ disable_rgmanager(xmlDocPtr doc)
         return 0;
     }
 
+    /* XXX check/strtold */
     x = atoi(a);
+    /* TODO: xmlFree(a) */
     if (x == 0) {
         fprintf(stderr, "config_version was invalid\n");
         return 0;
     }
 
     ++x;
+    /* XXX check */
     snprintf(buf, sizeof(buf), "%d", x);
     if (xmlSetProp(n, (xmlChar *) "config_version", (xmlChar *) buf) == NULL) {
         fprintf(stderr, "Failed to update config_version\n");
@@ -105,12 +111,13 @@ main(int argc, char **argv)
 
     xmlInitParser();
     xmlIndentTreeOutput = 1;
-    xmlKeepBlanksDefault(0);
+    NORETWRN(xmlKeepBlanksDefault(0));
 
     shift();
     doc = xmlParseFile(argv[0]);
 
     if (disable_rgmanager(doc)) {
+    /* XXX retval */
         xmlDocFormatDump(stdout, doc, 1);
     }
 
