@@ -26,49 +26,49 @@
 #  include <libxml/xmlmemory.h>
 #  include <libxml/xpath.h>
 
-#  define RA_PRIMARY	(1<<0)  /** Primary key */
-#  define RA_UNIQUE	(1<<1)  /** Unique for given type */
-#  define RA_REQUIRED	(1<<2)  /** Required (or an error if not present */
-#  define RA_INHERIT	(1<<3)  /** Inherit a parent resource's attr */
-#  define RA_RECONFIG	(1<<4)  /** Allow inline reconfiguration */
+#  define RA_PRIMARY    (1<<0)  /** Primary key */
+#  define RA_UNIQUE     (1<<1)  /** Unique for given type */
+#  define RA_REQUIRED   (1<<2)  /** Required (or an error if not present */
+#  define RA_INHERIT    (1<<3)  /** Inherit a parent resource's attr */
+#  define RA_RECONFIG   (1<<4)  /** Allow inline reconfiguration */
 
-#  define RF_INLINE	(1<<0)
-#  define RF_DEFINED	(1<<1)
-#  define RF_NEEDSTART	(1<<2)  /** Used when adding/changing resources */
-#  define RF_NEEDSTOP	(1<<3)  /** Used when deleting/changing resources */
-#  define RF_COMMON	(1<<4)  /** " */
-#  define RF_INDEPENDENT	(1<<5)
+#  define RF_INLINE     (1<<0)
+#  define RF_DEFINED    (1<<1)
+#  define RF_NEEDSTART  (1<<2)  /** Used when adding/changing resources */
+#  define RF_NEEDSTOP   (1<<3)  /** Used when deleting/changing resources */
+#  define RF_COMMON     (1<<4)  /** " */
+#  define RF_INDEPENDENT        (1<<5)
                                 /** Define this for a resource if it is
-				  otherwise an independent subtree */
-#  define RF_RECONFIG	(1<<6)
+                                    otherwise an independent subtree */
+#  define RF_RECONFIG   (1<<6)
 
-#  define RF_INIT		(1<<7)
+#  define RF_INIT               (1<<7)
                                 /** Resource rule: Initialize this resource
-				  class on startup */
-#  define RF_DESTROY	(1<<8)  /** Resource rule flag: Destroy this
-				  resource class if you delete it from
-				  the configuration */
+                                    class on startup */
+#  define RF_DESTROY    (1<<8)  /** Resource rule flag: Destroy this
+                                    resource class if you delete it from
+                                    the configuration */
 #  define RF_ENFORCE_TIMEOUTS (1<<9)
                                    /** Enforce timeouts for this node */
 #  define RF_NON_CRITICAL (1<<10)
                                 /** stop this resource if it fails */
-#  define RF_QUIESCE	(1<<11) /** don't restart this resource */
+#  define RF_QUIESCE    (1<<11) /** don't restart this resource */
 
-#  define RES_STOPPED	(0)
-#  define RES_STARTED	(1)
-#  define RES_FAILED	(2)
-#  define RES_DISABLED	(3)
+#  define RES_STOPPED   (0)
+#  define RES_STARTED   (1)
+#  define RES_FAILED    (2)
+#  define RES_DISABLED  (3)
 
 #  ifndef SHAREDIR
-#    define SHAREDIR		"/usr/share/cluster"
+#    define SHAREDIR            "/usr/share/cluster"
 #  endif
 
-#  define RESOURCE_ROOTDIR	SHAREDIR
-#  define RESOURCE_TREE_ROOT	"//rm"
-#  define RESOURCE_BASE		RESOURCE_TREE_ROOT "/resources"
-#  define RESOURCE_ROOT_FMT 	RESOURCE_TREE_ROOT "/%s[%d]"
+#  define RESOURCE_ROOTDIR      SHAREDIR
+#  define RESOURCE_TREE_ROOT    "//rm"
+#  define RESOURCE_BASE         RESOURCE_TREE_ROOT "/resources"
+#  define RESOURCE_ROOT_FMT     RESOURCE_TREE_ROOT "/%s[%d]"
 
-#  define RESOURCE_MAX_LEVELS	100
+#  define RESOURCE_MAX_LEVELS   100
 
 /* Include OCF definitions */
 //#include <res-ocf.h>
@@ -154,7 +154,7 @@ typedef struct _fod {
  */
 int res_flatten(xmlNode ** n, xmlNode * r, resource_node_t ** tree, resource_t * res);
 
-int expand_time(char *val);
+int expand_time(const char *val);
 int store_action(resource_act_t ** actsp, char *name, int depth, int timeout, int interval);
 
 /*
@@ -186,7 +186,7 @@ void deconstruct_domains(fod_t ** domains);
 /*
    Handy functions
  */
-resource_t *find_resource_by_ref(resource_t ** reslist, char *type, char *ref);
+resource_t *find_resource_by_ref(resource_t ** reslist, const char *type, char *ref);
 resource_rule_t *find_rule_by_type(resource_rule_t ** rulelist, char *type);
 void res_build_name(char *, size_t, resource_t *);
 
@@ -202,6 +202,6 @@ void destroy_resource(resource_t * res);
 char *attr_value(resource_node_t * node, const char *attrname);
 char *res_attr_value(resource_t * res, const char *attrname);
 char *primary_attr_value(resource_t *);
-void *act_dup(resource_act_t * acts);
+resource_act_t *act_dup(resource_act_t * acts);
 
-#endif                          /* _RESLIST_H */
+#endif

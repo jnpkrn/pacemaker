@@ -18,15 +18,13 @@
 
   Code originates from rgmanager project (reslist).
 */
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>   /* strcmp, strdup */
+
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/xpath.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>   /* strcmp */
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <libgen.h>
 
 #include "list.h"
 #include "reslist.h"
@@ -35,15 +33,16 @@
 void
 res_build_name(char *buf, size_t buflen, resource_t * res)
 {
+    /* XXX check */
     snprintf(buf, buflen, "%s:%s", res->r_rule->rr_type, res->r_attrs[0].ra_value);
 }
 
 /**
    Find and determine an attribute's value. 
 
-   @param res		Resource node to look examine
-   @param attrname	Attribute to retrieve.
-   @return 		value of attribute or NULL if not found
+   @param res           Resource node to look examine
+   @param attrname      Attribute to retrieve.
+   @return              value of attribute or NULL if not found
  */
 char *
 res_attr_value(resource_t * res, const char *attrname)
@@ -71,10 +70,10 @@ res_attr_value(resource_t * res, const char *attrname)
    Find and determine an attribute's value.  Takes into account inherited
    attribute flag, and append attribute flag, which isn't implemented yet.
 
-   @param node		Resource tree node to look examine
-   @param attrname	Attribute to retrieve.
-   @param ptype		Resource type to look for (if inheritance)
-   @return 		value of attribute or NULL if not found
+   @param node          Resource tree node to look examine
+   @param attrname      Attribute to retrieve.
+   @param ptype         Resource type to look for (if inheritance)
+   @return              value of attribute or NULL if not found
  */
 static char *
 _attr_value(resource_node_t * node, const char *attrname, const char *ptype)
@@ -82,7 +81,7 @@ _attr_value(resource_node_t * node, const char *attrname, const char *ptype)
     resource_t *res;
     resource_attr_t *ra;
     char *c, p_type[32];
-    ssize_t len;
+    size_t len;
     int x;
 
     if (!node)
@@ -111,12 +110,16 @@ _attr_value(resource_node_t * node, const char *attrname, const char *ptype)
         c = strchr(ra->ra_value, '%');
         if (!c) {
             /* Someone doesn't care or uses older
-               semantics on inheritance */
+               semantics of inheritance */
             return _attr_value(node->rn_parent, ra->ra_value, NULL);
         }
 
+        /* Difference guaranteed to be non-negative
+           (for x >= 0: &ra->ra_value[x] >= &ra->ra_value[0]) */
         len = (c - ra->ra_value);
+
         memset(p_type, 0, sizeof(p_type));
+        /* Guaranteed not to overlap */
         memcpy(p_type, ra->ra_value, len);
 
         /* Skip the "%" and recurse */
@@ -154,13 +157,13 @@ primary_attr_value(resource_t * res)
    Find a resource given its reference.  A reference is the value of the
    primary attribute.
 
-   @param reslist	List of resources to traverse.
-   @param type		Type of resource to look for.
-   @param ref		Reference
-   @return		Resource matching type/ref or NULL if none.
+   @param reslist       List of resources to traverse.
+   @param type          Type of resource to look for.
+   @param ref           Reference
+   @return              Resource matching type/ref or NULL if none.
  */
 resource_t *
-find_resource_by_ref(resource_t ** reslist, char *type, char *ref)
+find_resource_by_ref(resource_t ** reslist, const char *type, char *ref)
 {
     resource_t *curr;
     int x;
@@ -193,9 +196,9 @@ find_resource_by_ref(resource_t ** reslist, char *type, char *ref)
    Note: This function needs to be rewritten; it's way too long and way
    too indented.
 
-   @param reslist	Resource list to store the new resource.
-   @param newres	Resource to store
-   @return 		0 on succes; nonzero on failure.
+   @param reslist       Resource list to store the new resource.
+   @param newres        Resource to store
+   @return              0 on succes; nonzero on failure.
  */
 int
 store_resource(resource_t ** reslist, resource_t * newres)
@@ -254,18 +257,17 @@ store_resource(resource_t ** reslist, resource_t * newres)
 /**
    Obliterate a resource_t structure.
 
-   @param res		Resource to free.
+   @param res           Resource to free.
  */
 void
 destroy_resource(resource_t * res)
 {
     int x;
 
-    if (res->r_name)
-        free(res->r_name);
+    free(res->r_name);
 
     if (res->r_attrs) {
-        for (x = 0; res->r_attrs && res->r_attrs[x].ra_name; x++) {
+        for (x = 0; res->r_attrs[x].ra_name; x++) {
             free(res->r_attrs[x].ra_name);
             free(res->r_attrs[x].ra_value);
         }
@@ -284,7 +286,7 @@ destroy_resource(resource_t * res)
 /**
    Obliterate a resource_t list.
 
-   @param list		Resource list to free.
+   @param list          Resource list to free.
  */
 void
 destroy_resources(resource_t ** list)
@@ -297,10 +299,10 @@ destroy_resources(resource_t ** list)
     }
 }
 
-void *
+resource_act_t *
 act_dup(resource_act_t * acts)
 {
-    int x;
+    size_t x;
     resource_act_t *newacts;
 
     for (x = 0; acts[x].ra_name; x++) ;
@@ -312,6 +314,7 @@ act_dup(resource_act_t * acts)
     if (!newacts)
         return NULL;
 
+    /* Guaranteed not to overlap */
     memcpy(newacts, acts, x);
 
     return newacts;
@@ -333,11 +336,13 @@ _get_actions_ccs(const char *base, resource_t * res)
         act = NULL;
         timeout = -1;
 
+        /* XXX check */
         snprintf(xpath, sizeof(xpath), "%s/action[%d]/@name", base, ++idx);
 
         if (conf_get(xpath, &act) != 0)
             break;
 
+        /* XXX check */
         snprintf(xpath, sizeof(xpath), "%s/action[%d]/@timeout", base, idx);
         if (conf_get(xpath, &ret) == 0 && ret) {
             timeout = expand_time(ret);
@@ -346,6 +351,7 @@ _get_actions_ccs(const char *base, resource_t * res)
             free(ret);
         }
 
+        /* XXX check */
         snprintf(xpath, sizeof(xpath), "%s/action[%d]/@interval", base, idx);
         if (conf_get(xpath, &ret) == 0 && ret) {
             interval = expand_time(ret);
@@ -355,13 +361,15 @@ _get_actions_ccs(const char *base, resource_t * res)
         }
 
         if (!strcmp(act, "status") || !strcmp(act, "monitor")) {
+            /* XXX check */
             snprintf(xpath, sizeof(xpath), "%s/action[%d]/@depth", base, idx);
             if (conf_get(xpath, &ret) == 0 && ret) {
+                /* XXX check/strtol */
                 depth = atoi(ret);
                 if (depth < 0)
                     depth = 0;
 
-                /* */
+                /* XXX originally unfinished comment here (wildcard?) */
                 if (ret[0] == '*')
                     depth = -1;
                 free(ret);
@@ -377,9 +385,9 @@ _get_actions_ccs(const char *base, resource_t * res)
    Try to load all the attributes in our rule set.  If none are found,
    or an error occurs, return NULL and move on to the next one.
 
-   @param rule		Resource rule set to use when looking for data
-   @param base		Base XPath path to start with.
-   @return		New resource if legal or NULL on failure/error
+   @param rule          Resource rule set to use when looking for data
+   @param base          Base XPath path to start with.
+   @return              New resource if legal or NULL on failure/error
  */
 resource_t *
 load_resource(resource_rule_t * rule, const char *base)
@@ -411,6 +419,7 @@ load_resource(resource_rule_t * rule, const char *base)
            Ask CCS for the respective attribute
          */
         attr = NULL;
+        /* XXX check */
         snprintf(ccspath, sizeof(ccspath), "%s/@%s", base, attrname);
 
         if (conf_get(ccspath, &attr) != 0) {
@@ -435,6 +444,7 @@ load_resource(resource_rule_t * rule, const char *base)
                 }
 
                 /* Copy default value from resource rule */
+                /* XXX check */
                 attr = strdup(rule->rr_attrs[x].ra_value);
             }
         }
@@ -467,6 +477,7 @@ load_resource(resource_rule_t * rule, const char *base)
            attributes are present soon.
          */
         if (attrname && attr)
+            /* XXX check  */
             store_attribute(&res->r_attrs, attrname, attr, flags);
     }
 
@@ -475,6 +486,7 @@ load_resource(resource_rule_t * rule, const char *base)
         return NULL;
     }
 
+    /* XXX check, not checking leads to unexpected flow trace */
     res->r_actions = act_dup(rule->rr_actions);
     _get_actions_ccs(base, res);
 
@@ -484,9 +496,9 @@ load_resource(resource_rule_t * rule, const char *base)
 /**
    Read all resources in the resource manager block in CCS.
 
-   @param reslist	Empty list to fill with resources.
-   @param rulelist	List of rules to use when searching CCS.
-   @return		0 on success, nonzero on failure.
+   @param reslist       Empty list to fill with resources.
+   @param rulelist      List of rules to use when searching CCS.
+   @return              0 on success, nonzero on failure.
  */
 int
 load_resources(resource_t ** reslist, resource_rule_t ** rulelist)
@@ -499,6 +511,7 @@ load_resources(resource_t ** reslist, resource_rule_t ** rulelist)
     list_do(rulelist, currule) {
 
         for (resID = 1;; resID++) {
+            /* XXX check */
             snprintf(tok, sizeof(tok), RESOURCE_BASE "/%s[%d]", currule->rr_type, resID);
 
             newres = load_resource(currule, tok);

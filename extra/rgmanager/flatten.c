@@ -16,23 +16,24 @@
   Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
   MA 02110-1301 USA
 */
-#include <libxml/parser.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <string.h>  /* strcmp, strcasecmp */
-#include <libgen.h>
+#include <string.h>   /* strcmp */
+#include <strings.h>  /* strcasecmp */
+#include <libgen.h>   /* POSIX basename */
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>       /* xmlNodePtr, xmlChildrenNode, ... */
+#include <libxml/xmlstring.h>  /* xmlChar */
 
 #include "list.h"
 #include "reslist.h"
 #include "xmlconf.h"
 
-#define shift() {++argv; --argc;}
+#define shift()          {++argv; --argc;}
+#define NORETWRN(fcall)  (void) fcall
 
-const char *agentpath = RESOURCE_ROOTDIR;
+const char *const agentpath = RESOURCE_ROOTDIR;
 
 static xmlNode *
 get_rm_node(xmlDocPtr doc)
@@ -90,11 +91,14 @@ replace_resource(xmlNodePtr rm, char *restype, char *primattr, char *ident, xmlN
         if (o->type != XML_ELEMENT_NODE)
             continue;
         if (!strcmp((char *)o->name, restype)) {
+            /* XXX check */
             p = (char *)xmlGetProp(o, (xmlChar *) primattr);
             if (!strcmp(p, ident)) {
+                /* TODO: xmlFree(p) */
                 r = o;
                 break;
             }
+            /* TODO: xmlFree(p) */
         }
     }
 
@@ -104,6 +108,7 @@ replace_resource(xmlNodePtr rm, char *restype, char *primattr, char *ident, xmlN
     xmlUnlinkNode(r);
     xmlFreeNode(r);
 
+    /* XXX check */
     xmlAddChild(rm, n);
 
     return 0;
@@ -138,12 +143,16 @@ flatten(int argc, char **argv)
     d = conf_get_doc();
     rm = get_rm_node(d);
 
+    /* XXX check */
     load_resource_rules(agentpath, &rulelist);
     if (!rulelist) {
         fprintf(stderr, "No resource rules available\n");
         goto out;
     }
+
+    /* XXX check */
     load_resources(&reslist, &rulelist);
+    /* XXX check */
     build_resource_tree(&tree, &rulelist, &reslist);
     if (!tree) {
         fprintf(stderr, "No resource trees defined; nothing to do\n");
@@ -182,15 +191,20 @@ flatten(int argc, char **argv)
 
     remove_resources_block(rm);
     if (new_rb) {
+        /* XXX check */
         xmlAddChild(rm, new_rb);
     }
 
+    /* XXX check */
     xmlDocFormatDump(f, d, 1);
     if (f != stdout)
+        /* XXX check */
         fclose(f);
 
   out:
+    /* referenced object disposed with conf_close */
     d = NULL;
+    /* XXX check */
     conf_close();
     destroy_resource_tree(&tree);
     destroy_resources(&reslist);
@@ -223,7 +237,7 @@ main(int argc, char **argv)
 
     xmlInitParser();
     xmlIndentTreeOutput = 1;
-    xmlKeepBlanksDefault(0);
+    NORETWRN(xmlKeepBlanksDefault(0));
 
     shift();
     ret = flatten(argc, argv);

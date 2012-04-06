@@ -18,53 +18,53 @@ struct list_entry {
 
 #  define le(p) (&((*p)._list_head))
 
-#  define list_insert(list, newnode) \
-do { \
-	if (!(*list)) { \
-		le(newnode)->le_next = \
-		le(newnode)->le_prev = le(newnode); \
-		*list = (void *)le(newnode); \
-	} else { \
-		le(*list)->le_prev->le_next = le(newnode); \
-		le(newnode)->le_next = le(*list); \
-		le(newnode)->le_prev = le(*list)->le_prev; \
-		le(*list)->le_prev = le(newnode); \
-	} \
+#  define list_insert(list, newnode)               \
+do {                                               \
+    if (!(*list)) {                                \
+        le(newnode)->le_next =                     \
+        le(newnode)->le_prev = le(newnode);        \
+        *list = (void *)le(newnode);               \
+    } else {                                       \
+        le(*list)->le_prev->le_next = le(newnode); \
+        le(newnode)->le_next = le(*list);          \
+        le(newnode)->le_prev = le(*list)->le_prev; \
+        le(*list)->le_prev = le(newnode);          \
+    }                                              \
 } while (0)
 
 #  define list_prepend(list, newnode) \
-do { \
-	list_insert(list, newnode); \
-	*list = newnode; \
+do {                                  \
+    list_insert(list, newnode);       \
+    *list = newnode;                  \
 } while (0)
 
-#  define list_remove(list, oldnode) \
-do { \
-	if (le(oldnode) == le(*list)) { \
-		*list = (void *)le(*list)->le_next; \
-	} \
-	if (le(oldnode) == le(*list)) { \
-		le(oldnode)->le_next = NULL; \
-		le(oldnode)->le_prev = NULL; \
-		*list = NULL; \
-	} else { \
-		le(oldnode)->le_next->le_prev = le(oldnode)->le_prev; \
-		le(oldnode)->le_prev->le_next = le(oldnode)->le_next; \
-		le(oldnode)->le_prev = NULL; \
-	       	le(oldnode)->le_next = NULL; \
-	} \
+#  define list_remove(list, oldnode)                          \
+do {                                                          \
+    if (le(oldnode) == le(*list)) {                           \
+        *list = (void *)le(*list)->le_next;                   \
+    }                                                         \
+    if (le(oldnode) == le(*list)) {                           \
+        le(oldnode)->le_next = NULL;                          \
+        le(oldnode)->le_prev = NULL;                          \
+        *list = NULL;                                         \
+    } else {                                                  \
+        le(oldnode)->le_next->le_prev = le(oldnode)->le_prev; \
+        le(oldnode)->le_prev->le_next = le(oldnode)->le_next; \
+        le(oldnode)->le_prev = NULL;                          \
+            le(oldnode)->le_next = NULL;                      \
+    }                                                         \
 } while (0)
 
 /*
    list_do(list, node) {
-   	stuff;
+    stuff;
    } while (!list_done(list, node));
  */
 #  define list_do(list, curr) \
-	if (*list && (curr = *list)) do
+    if (*list && (curr = *list)) do
 
 #  define list_done(list, curr) \
-	(curr && (((curr = (void *)le(curr)->le_next)) && (curr == *list)))
+    (curr && (((curr = (void *)le(curr)->le_next)) && (curr == *list)))
 
 /*
  * list_for(list, tmp, counter) {
@@ -77,18 +77,18 @@ do { \
  * * traverses list, incrementing counter.  If we get to the for loop,
  *   there must be at least one item in the list
  */
-#  define list_for(list, curr, cnt) \
-	if (!(cnt=0) && (list != NULL) && (*list != NULL)) \
-		for (curr = *list; \
-		     (cnt == 0) || (curr != *list); \
-		     curr = (void*)le(curr)->le_next, \
-		     cnt++)
+#  define list_for(list, curr, cnt)                    \
+    if (!(cnt=0) && (list != NULL) && (*list != NULL)) \
+        for (curr = *list;                             \
+             (cnt == 0) || (curr != *list);            \
+             curr = (void*)le(curr)->le_next,          \
+             cnt++)
 
-#  define list_for_rev(list, curr, cnt) \
-	if (!(cnt=0) && list && *list) \
-		for (curr = (void *)(le(*list)->le_prev); \
-		     (cnt == 0) || ((void *)curr != le(*list)->le_prev); \
-		     curr = (void*)(le(curr)->le_prev), \
-		     cnt++)
+#  define list_for_rev(list, curr, cnt)                          \
+    if (!(cnt=0) && list && *list)                               \
+        for (curr = (void *)(le(*list)->le_prev);                \
+             (cnt == 0) || ((void *)curr != le(*list)->le_prev); \
+             curr = (void*)(le(curr)->le_prev),                  \
+             cnt++)
 
 #endif
