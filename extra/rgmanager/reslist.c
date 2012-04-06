@@ -22,10 +22,6 @@
 #include <stdio.h>
 #include <string.h>   /* strcmp, strdup */
 
-#include <libxml/parser.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/xpath.h>
-
 #include "list.h"
 #include "reslist.h"
 #include "xmlconf.h"

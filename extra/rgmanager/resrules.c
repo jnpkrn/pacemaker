@@ -18,22 +18,22 @@
 
   Code originates from rgmanager project (resrules).
 */
-#include <libxml/parser.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <list.h>
-#include <ctype.h>
-#include <dirent.h>
-#include <sys/wait.h>
+#include <string.h>    /* strcmp */
+#include <ctype.h>     /* isdigit */
+#include <dirent.h>    /* readdir */
+#include <libgen.h>    /* basename */
+#include <unistd.h>    /* read, pipe, fork, close, ... */
+#include <sys/wait.h>  /* waitpid */
+#include <sys/stat.h>  /* stat */
 #include <errno.h>
-#include <libgen.h>
-#include <unistd.h>  /* read, pipe, fork, close, ... */
 
+#include <libxml/parser.h>
+#include <libxml/tree.h>   /* xmlDocPtr, ... */
+#include <libxml/xpath.h>  /* xmlXPathContextPtr */
+
+#include "list.h"
 #include "reslist.h"
 #include "xmlconf.h"
 
