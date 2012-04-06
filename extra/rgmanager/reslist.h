@@ -21,10 +21,7 @@
 #ifndef _RESLIST_H
 #  define _RESLIST_H
 
-#  include <stdint.h>
-#  include <libxml/parser.h>
-#  include <libxml/xmlmemory.h>
-#  include <libxml/xpath.h>
+#  include <libxml/tree.h> /* xmlNode */
 
 #  define RA_PRIMARY    (1<<0)  /** Primary key */
 #  define RA_UNIQUE     (1<<1)  /** Unique for given type */
