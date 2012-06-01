@@ -116,9 +116,8 @@ _attr_value(resource_node_t * node, const char *attrname, const char *ptype)
         if (len >= sizeof(p_type))
             len = sizeof(p_type) - 1;
 
-        /* Guaranteed not to overlap */
         memcpy(p_type, ra->ra_value, len);
-        p_type[sizeof(p_type)-1] = '\0';
+        p_type[len] = '\0';
 
         /* Skip the "%" and recurse */
         return _attr_value(node->rn_parent, ++c, p_type);
