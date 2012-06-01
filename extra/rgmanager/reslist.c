@@ -89,14 +89,21 @@ _attr_value(resource_node_t * node, const char *attrname, const char *ptype)
     if (ptype && strcmp(res->r_rule->rr_type, ptype))
         return _attr_value(node->rn_parent, attrname, ptype);
 
+    fprintf(stderr, "A\n");
+
     for (x = 0; res->r_attrs && res->r_attrs[x].ra_name; x++) {
         if (strcmp(attrname, res->r_attrs[x].ra_name))
             continue;
+
+        fprintf(stderr, "B\n");
 
         ra = &res->r_attrs[x];
 
         if (!(ra->ra_flags & RA_INHERIT))
             return ra->ra_value;
+
+        fprintf(stderr, "C\n");
+
         /* 
            Handle resource_type%field to be more precise, so we
            don't have to worry about this being a child
@@ -110,15 +117,26 @@ _attr_value(resource_node_t * node, const char *attrname, const char *ptype)
             return _attr_value(node->rn_parent, ra->ra_value, NULL);
         }
 
+        fprintf(stderr, "D\n");
+
         /* Difference guaranteed to be non-negative
            (for x >= 0: &ra->ra_value[x] >= &ra->ra_value[0]) */
         len = (c - ra->ra_value);
         if (len >= sizeof(p_type))
             len = sizeof(p_type) - 1;
 
-        /* Guaranteed not to overlap */
+        fprintf(stderr, "first part (before \%) will be assigned: %s\n", ra->ra_value);
+        fprintf(stderr, "before assignment: %s\n", p_type);
+
         memcpy(p_type, ra->ra_value, len);
+#define GOOD 0
+#if GOOD
+        p_type[len] = '\0';
+#else
         p_type[sizeof(p_type)-1] = '\0';
+#endif
+
+        fprintf(stderr, "after assignment: %s\n", p_type);
 
         /* Skip the "%" and recurse */
         return _attr_value(node->rn_parent, ++c, p_type);

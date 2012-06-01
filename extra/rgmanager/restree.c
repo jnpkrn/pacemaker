@@ -71,22 +71,30 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
     xmlSetProp(n, (xmlChar *) "rgmanager-meta-agent",
                (xmlChar *) basename(node->rn_resource->r_rule->rr_agent));
 
+    fprintf(stderr, "1\n");
+
     /* Multiple-instance resources must be decomposed into separate
        resources */
     if (node->rn_resource->r_refs > 1) {
+        fprintf(stderr, "2\n");
         snprintf(buf, sizeof(buf), "%s_%d",
                  primary_attr_value(node->rn_resource), node->rn_resource->r_incarnations);
         ++node->rn_resource->r_incarnations;
     } else {
+        fprintf(stderr, "3\n");
         snprintf(buf, sizeof(buf), "%s", primary_attr_value(node->rn_resource));
     }
 
     for (x = 0; node->rn_resource->r_attrs && node->rn_resource->r_attrs[x].ra_name; x++) {
         ra = &node->rn_resource->r_attrs[x];
 
+        fprintf(stderr, "4\n");
+
         if (ra->ra_flags & RA_PRIMARY) {
+            fprintf(stderr, "5\n");
             xmlSetProp(n, (xmlChar *) ra->ra_name, (xmlChar *) buf);
         } else {
+            fprintf(stderr, "6\n");
             val = attr_value(node, res->r_attrs[x].ra_name);
             if (!val)
                 continue;
