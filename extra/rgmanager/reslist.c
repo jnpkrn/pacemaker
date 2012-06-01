@@ -129,7 +129,7 @@ _attr_value(resource_node_t * node, const char *attrname, const char *ptype)
         fprintf(stderr, "before assignment: %s\n", p_type);
 
         memcpy(p_type, ra->ra_value, len);
-#define GOOD 0
+#define GOOD 1
 #if GOOD
         p_type[len] = '\0';
 #else
