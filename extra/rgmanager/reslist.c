@@ -519,6 +519,7 @@ load_resources(resource_t ** reslist, resource_rule_t ** rulelist)
                 fprintf(stderr, "Error storing %s resource\n", newres->r_rule->rr_type);
 
                 destroy_resource(newres);
+                continue;
             }
 
             /* Just information */
