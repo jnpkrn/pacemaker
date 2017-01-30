@@ -47,7 +47,7 @@ before_script:
 
 script: 
 - if test ${CC} != cov-build; then sudo make install-exec-local || true; fi
-- if test ${CC} != cov-build; then make && ./BasicSanity.sh -V; fi
+- if test ${CC} != cov-build; then make && ./BasicSanity.sh -V lrmd; fi
 - if test ${CC} = cov-build; then export CC=gcc; bash ./travisci_build_coverity_scan.sh; fi
 
 #after_script:
@@ -67,7 +67,7 @@ notifications:
       - andrew@beekhof.net
 
 # whitelist
-branches:
-  only:
-    - master
-    - "1.1"
+#branches:
+#  only:
+#    - master
+#    - "1.1"

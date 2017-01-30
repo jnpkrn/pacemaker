@@ -986,7 +986,7 @@ internal_stonith_action_execute(stonith_action_t * action)
 
     } else {
         /* sync, using 100ms sleep periods waiting for process to finish */
-        int timeout = action->remaining_timeout * (1000/100) + 1;
+        int timeout = (action->remaining_timeout) * (1000/100) + 1;
         pid_t p = 0;
         struct timeval waitsleep;
 
@@ -995,15 +995,18 @@ internal_stonith_action_execute(stonith_action_t * action)
             if (p > 0) {
                 break;
             }
+            crm_warn("Sleep 100ms");
             waitsleep = (struct timeval) { .tv_sec = 0, .tv_usec = 100 };
             ret = select(0, NULL, NULL, NULL, &waitsleep);
             if (ret >= 0 || errno != EINTR) {
+                crm_warn("Timeout--");
                 timeout--;
             }
         }
 
-        if (timeout == 0) {
+        if (timeout == 0 && p == 0) {
             int killrc = kill(-pid, SIGKILL);
+            crm_warn("Killed");
 
             if (killrc && errno != ESRCH) {
                 crm_err("kill(%d, KILL) failed: %s (%d)", pid, pcmk_strerror(errno), errno);
@@ -1014,6 +1017,7 @@ internal_stonith_action_execute(stonith_action_t * action)
              *
              * This makes it safe to skip WNOHANG here
              */
+            crm_warn("Waitpid");
             p = waitpid(pid, &status, 0);
         }
 
@@ -1110,6 +1114,7 @@ stonith_action_execute(stonith_action_t * action, int *agent_result, char **outp
             /* success! */
             break;
         }
+        crm_warn("Next round");
         /* keep retrying while we have time left */
     } while (update_remaining_timeout(action));
 
