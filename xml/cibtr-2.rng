@@ -38,12 +38,31 @@
       <attribute name="what">
         <data type="NCName"/>
       </attribute>
-      <attribute name="with">
-        <choice>
-          <data type="NCName"/>
-          <empty/>
-        </choice>
-      </attribute>
+      <choice>
+        <group>
+          <attribute name="with">
+            <choice>
+              <data type="NCName"/>
+              <empty/>
+            </choice>
+          </attribute>
+        </group>
+        <group>
+          <attribute name="with">
+            <choice>
+              <data type="NCName"/>
+            </choice>
+          </attribute>
+          <attribute name="where">
+            <data type="NCName"/>
+          </attribute>
+        </group>
+      </choice>
+      <optional>
+        <attribute name="in-case-of">
+          <data type="string"/>
+        </attribute>
+      </optional>
       <optional>
         <attribute name="msg-extra">
           <data type="string">
