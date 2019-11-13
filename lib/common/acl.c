@@ -316,12 +316,15 @@ pcmk__unpack_acl(xmlNode *source, xmlNode *target, const char *user)
 #if ENABLE_ACL
     xml_doc_private_t *docpriv = NULL;
 
-    if ((target == NULL) || (target->doc == NULL)
-        || (target->doc->_private == NULL)) {
+    if ((target == NULL) || (target->doc == NULL)) {
         return;
+    } else if (target->doc->_private == NULL) {
+        docpriv = __xml_doc_private_create(
+                      (xml_doc_private_t **) &target->doc->_private);
+    } else {
+        docpriv = target->doc->_private;
     }
 
-    docpriv = target->doc->_private;
     if (pcmk_acl_required(user) == FALSE) {
         crm_trace("Not unpacking ACLs because not required for user '%s'",
                   user);
@@ -638,7 +641,6 @@ pcmk__check_acl(xmlNode *xml, const char *name, enum xml_private_flags mode)
 {
     CRM_ASSERT(xml);
     CRM_ASSERT(xml->doc);
-    CRM_ASSERT(xml->doc->_private);
 
 #if ENABLE_ACL
     if (pcmk__tracking_xml_changes(xml, FALSE) && xml_acl_enabled(xml)) {

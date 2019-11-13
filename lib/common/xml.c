@@ -227,6 +227,17 @@ __xml_deleted_obj_free(void *data)
     }
 }
 
+xml_doc_private_t *
+__xml_doc_private_create(xml_doc_private_t **docpriv)
+{
+    *docpriv = calloc(1, sizeof(xml_doc_private_t));
+    CRM_CHECK(*docpriv != NULL, return *docpriv);
+    (*docpriv)->check = XML_DOC_PRIVATE_MAGIC;
+    /* Flags will be reset if necessary when tracking is enabled */
+    (*docpriv)->flags |= (xpf_dirty|xpf_created);
+    return *docpriv;
+}
+
 static void
 __xml_doc_private_clean(xml_doc_private_t *docpriv)
 {
@@ -278,12 +289,11 @@ pcmkRegisterNode(xmlNodePtr node)
 {
     switch (node->type) {
         case XML_DOCUMENT_NODE: {
-            xml_doc_private_t *docpriv = NULL;
-            docpriv = calloc(1, sizeof(xml_doc_private_t));
-            docpriv->check = XML_DOC_PRIVATE_MAGIC;
-            /* Flags will be reset if necessary when tracking is enabled */
-            docpriv->flags |= (xpf_dirty|xpf_created);
-            node->_private = docpriv;
+            /* we don't know the root tag yet, but we cannot speculatively
+               expect it's going to be a base config and roll back in
+               XML_ELEMENT_NODE clause later on either, since node won't
+               have doc item initialized yet; thus, we opt for lazy, ad-hoc
+               initialization of the _private member from pcmk__unpack_acl */
             break;
         }
         case XML_ELEMENT_NODE:
@@ -334,7 +344,7 @@ xml_track_changes(xmlNode * xml, const char *user, xmlNode *acl_source, bool enf
 
 bool xml_tracking_changes(xmlNode * xml)
 {
-    if (xml == NULL) {
+    if (xml == NULL || xml->doc == NULL || xml->doc->_private == NULL) {
         return FALSE;
 
     } else if (is_set(((xml_doc_private_t *) xml->doc->_private)->flags,
@@ -1034,7 +1044,12 @@ xml_accept_changes(xmlNode * xml)
     docpriv = xml->doc->_private;
     top = xmlDocGetRootElement(xml->doc);
 
-    __xml_doc_private_clean(docpriv);
+    if (docpriv != NULL) {
+        __xml_doc_private_clean(docpriv);
+    } else {
+        docpriv = __xml_doc_private_create(
+                      (xml_doc_private_t **) &xml->doc->_private);
+    }
 
     if (is_not_set(docpriv->flags, xpf_dirty)) {
         docpriv->flags = xpf_none;

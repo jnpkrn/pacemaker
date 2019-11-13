@@ -14,6 +14,9 @@
  * declared with G_GNUC_INTERNAL for efficiency.
  */
 
+#define XML_DOC_PRIVATE_MAGIC   0x81726354UL
+#define XML_NODE_PRIVATE_MAGIC  0x54637281UL
+
 enum xml_private_flags {
      xpf_none        = 0x0000,
      xpf_dirty       = 0x0001,
@@ -48,6 +51,9 @@ typedef struct xml_doc_private_s {
         GListPtr acls;
         GListPtr deleted_objs;
 } xml_doc_private_t;
+
+G_GNUC_INTERNAL
+xml_doc_private_t *__xml_doc_private_create(xml_doc_private_t **docpriv);
 
 G_GNUC_INTERNAL
 void pcmk__set_xml_flag(xmlNode *xml, enum xml_private_flags flag);
